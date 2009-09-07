@@ -1,0 +1,20 @@
+#nested block-comment is ignored
+code
+#nested block-comment and single-line-comment
+code
+code*/code
+code
+#comment mark in string
+code"strnig/*string//string"code
+code"string\
+/*string\
+//string\
+"code
+code"string/*string//string\"string/*string//string"code
+code"string/*string//string\"string/*string//string\\"code
+code"string/*string//string\"string/*string//string\x0d\\"code
+code"string/*string//string\
+string/*string//string\x0d\\"code
+#space in string.must be keep it.
+"	space		in		string	.\
+  must  be  keep  it  .";
