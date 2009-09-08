@@ -10,7 +10,7 @@ all:	build
 # COMMANDS
 #
 cleanall: clean
-	del *.zip *.ncb *.user *.dat *.cache *.bak *.decomment $$*
+	del *.zip *.ncb *.user *.dat *.cache *.bak *.decomment $$* src\*.aps src\*.bak
 
 clean:
 	vcbuild /clean   decomment.sln
