@@ -44,6 +44,9 @@ bool gIsKeepBlankLine = false;
 /** -i: keep indent spaces */
 bool gIsKeepIndent = false;
 
+/** -q: remove quoted string */
+bool gIsRemoveQuotedString = false;
+
 /** -n: print line number */
 bool gIsPrintNumber = false;
 
@@ -59,14 +62,15 @@ const char* gOutDir = NULL;
 //........................................................................
 // messages
 /** short help-message */
-const char* gUsage  = "usage :decomment [-h?binsr] [-d<DIR>] file1.cpp file2.cpp ...\n";
+const char* gUsage  = "usage :decomment [-h?biqnsr] [-d<DIR>] file1.cpp file2.cpp ...\n";
 
 /** detail help-message for options and version */
 const char* gUsage2 =
-	"  $Revision: 1.7 $\n"
+	"  version: 1.8\n"
 	"  -h -?      this help\n"
 	"  -b         keep blank line\n"
 	"  -i         keep indent spaces\n"
+	"  -q         remove quoted string\n"
 	"  -n         print line number of input-file\n"
 	"  -s         output to stdout instend of files(*.decomment)\n"
 	"  -r         recursive search under the input-file's folder(wildcard needed)\n"
@@ -141,21 +145,27 @@ void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, con
 			continue;
 
 		case STRING_CONSTANT:
-			if (c == '\\')
-				state = STRING_ESCAPE;
-			else if (c == '"')
+			if (c == '"')
 				state = SEPARATOR;
+			else {
+				if (c == '\\')
+					state = STRING_ESCAPE;
+				if (gIsRemoveQuotedString)
+					continue; // skip output
+			}
 			break;
 
 		case CHAR_CONSTANT:
-			if (c == '\\')
-				state = CHAR_ESCAPE;
-			else if (c == '\'')
+			if (c == '\'')
 				state = SEPARATOR;
+			else if (c == '\\')
+				state = CHAR_ESCAPE;
 			break;
 
 		case STRING_ESCAPE:
 			state = STRING_CONSTANT;
+			if (gIsRemoveQuotedString)
+				continue; // skip output
 			break;
 
 		case CHAR_ESCAPE:
@@ -422,6 +432,9 @@ show_help:			error_abort(gUsage2);
 					break;
 				case 'i':
 					gIsKeepIndent = true;
+					break;
+				case 'q':
+					gIsRemoveQuotedString = true;
 					break;
 				case 'n':
 					gIsPrintNumber = true;
