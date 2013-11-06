@@ -311,9 +311,9 @@ FILE* OpenOutput(const char* inputfname, const char* extname)
 		_splitpath(inputfname, NULL, NULL, base, ext);
 		_makepath(fname, NULL, gOutDir, base, ext);
 #else // may be UNIX
-		char base[_MAX_PATH];
-		basename(strcpy(base, inputfname));
-		snprintf(fname, _MAX_PATH, "%s/%s", gOutDir, base);
+		char input[_MAX_PATH];
+		strcpy(input, inputfname);
+		snprintf(fname, _MAX_PATH, "%s/%s", gOutDir, basename(input));
 #endif
 	}
 	else {
