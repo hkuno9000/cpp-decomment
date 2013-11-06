@@ -4,9 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <io.h>
+#ifdef _WIN32
+	#include <io.h>
+#else // may be UNIX
+	#include <libgen.h>
+	#define _MAX_PATH FILENAME_MAX
+#endif
 #include <ctype.h>
 //using namespace std;
+
 
 //------------------------------------------------------------------------
 // 型、定数、グローバル変数の定義
@@ -299,10 +305,16 @@ FILE* OpenOutput(const char* inputfname, const char* extname)
 {
 	char fname[_MAX_PATH+100];	// 拡張子には100文字もみておけば十分
 	if (gOutDir) {
+#ifdef _WIN32
 		char base[_MAX_PATH];
 		char ext[_MAX_PATH];
 		_splitpath(inputfname, NULL, NULL, base, ext);
 		_makepath(fname, NULL, gOutDir, base, ext);
+#else // may be UNIX
+		char base[_MAX_PATH];
+		basename(strcpy(base, inputfname));
+		snprintf(fname, _MAX_PATH, "%s/%s", gOutDir, base);
+#endif
 	}
 	else {
 		strcpy(fname, inputfname);
@@ -363,6 +375,7 @@ void DecommentMain(const char* fname)
 /** ワイルドカード展開と再帰探索付きの DecommentMain */
 void DecommentWildMain(const char* fname)
 {
+#ifdef _WIN32
 	if (strpbrk(fname, "*?") == NULL) {
 		//----- ワイルドカードを含まないパス名の処理
 		DecommentMain(fname);
@@ -410,6 +423,9 @@ void DecommentWildMain(const char* fname)
 			_findclose(h);
 		}
 	}
+#else // may be UNIX: already glob by shell. don't care.
+	DecommentMain(fname);
+#endif
 }
 
 //------------------------------------------------------------------------
