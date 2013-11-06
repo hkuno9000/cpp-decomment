@@ -1,5 +1,5 @@
-/**@file decomment.cpp --- CPP�\�[�X����R�����g�Ƌ󔒂���������.
- * $Id: decomment.cpp,v 1.7 2002/10/01 08:09:01 hkuno Exp $
+﻿/**@file decomment.cpp --- CPPソースからコメントと空白を除去する.
+ * -*- coding: utf-8 -*-
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,18 +9,18 @@
 //using namespace std;
 
 //------------------------------------------------------------------------
-// �^�A�萔�A�O���[�o���ϐ��̒�`
+// 型、定数、グローバル変数の定義
 //........................................................................
 // typedef and constants
-/** �����������^�̕ʖ� */
+/** 無符号文字型の別名 */
 typedef unsigned char uchar;
 
-/** ������long�^�̕ʖ� */
+/** 無符号long型の別名 */
 typedef unsigned long ulong;
 
 const int LINESIZE=8192;
 
-/** C++�\�[�X���͍s��� */
+/** C++ソース入力行状態 */
 enum cpp_state_e {
 	BLANK,				// space
 	IDNAME,				// identifier or reserved-word
@@ -78,32 +78,32 @@ const char* gUsage2 =
 	"  fileN.cpp  input-files. wildcard OK\n";
 
 //------------------------------------------------------------------------
-/** �p���������肷�� */
+/** 英数字か判定する */
 inline bool IsAlnum(int c)
 {
 	return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
 }
 
-/** ���ʖ�����(�����܂��͉p����)�����肷�� */
+/** 識別名文字(下線または英数字)か判定する */
 inline bool IsIdNameChar(int c)
 {
 	return (c == '_' || (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
 }
 
-/** �󔒕��������肷�� */
+/** 空白文字か判定する */
 inline bool IsSpace(int c)
 {
-	return (c <= ' '); // ��_�Ȕ��肾���A�����Ώۂ̓e�L�X�g�Ȃ̂ł���ŏ\��.
+	return (c <= ' '); // 大胆な判定だが、扱う対象はテキストなのでこれで十分.
 }
 
-/** ���ʕ��������肷�� */
+/** 括弧文字か判定する */
 inline bool IsParen(int c)
 {
 	return (c == '[' || c == ']' || c == '{' || c == '}' || c == '(' || c == ')');
 }
 
 //------------------------------------------------------------------------
-/** C++�\�[�X�Ƃ���"�]���ȋ�"��"�R�����g"�Ɖ��s����������. */
+/** C++ソースとして"余分な空白"と"コメント"と改行を除去する. */
 void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, const char* s)
 {
 	int c;
@@ -112,23 +112,23 @@ void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, con
 	bool needSpace = false;
 	while ((c = (uchar)*s++) != '\0') {
 
-		if (c == '\\' && *s == '\n') { // �s�̕����w��.
+		if (c == '\\' && *s == '\n') { // 行の併合指定.
 			if (state == CPP_COMMENT) {
-				// �P�s�R�����g���玟�s�ւ̍s�����w��͉����̌��Ȃ̂Ōx�����o���Ė�������B
-				// �������o�C�g�̕����R�[�h�� 0x5c �̏ꍇ���E���Ă��܂����A
-				// �p����ŃR���p�C������ƕ����w�舵���ɂȂ�������P�[�X�Ȃ̂ŁA�x�����o���Ă����B
+				// 単行コメントから次行への行併合指定は何かの誤りなので警告を出して無視する。
+				// 漢字第二バイトの文字コードが 0x5c の場合も拾ってしまうが、
+				// 英語環境でコンパイルすると併合指定扱いになる怪しいケースなので、警告を出しておく。
 				fprintf(stderr, "%s(%d) !!!warning: line-marge-mark '\\' at end of single comment. ignore it.\n",
 					fname, line);
 				state = BLANK;
 			}
 			else if (state == C_COMMENT) {
-				// �u���b�N�R�����g���ɂāA���s�ւ̍s�����w��͂�͂���Ǝv���邪�A
-				// ���s�������R�����g���Ȃ̂ŁA���������Ƃ���Ŗ��͂Ȃ��B����Ė�������B
+				// ブロックコメント内にて、次行への行併合指定はやはり誤りと思われるが、
+				// 次行も同じコメント内なので、併合したところで問題はない。よって無視する。
 			}
 			else {
 				*d++ = c;	// c='\\'
 			}
-			++s; continue; // �s���L��'\n'�̎��֐i��(�����炭������)
+			++s; continue; // 行末記号'\n'の次へ進む(おそらく文字列末)
 		}
 
 		switch (state) {
@@ -202,21 +202,21 @@ parse_token:
 			}
 			else if (IsIdNameChar(c)) {
 				if (lastToken == IDNAME && state == BLANK && d > top) {
-					needSpace = true; // IDNAME�Ԃ̋󔒂͋�؂�L���Ƃ��ĈӖ�������̂ŕK�v�ł���.
+					needSpace = true; // IDNAME間の空白は区切り記号として意味があるので必要である.
 				}
 				lastToken = state = IDNAME;
 				break;
 			}
 			else {
 				if (lastToken == OPERATOR && state == BLANK && d > top) {
-					// a. "i++ + j" �� "i + ++j" �͉��Z�q�Ԃ̋󔒂���������Ƃǂ����"i+++j"�ƂȂ莮�̈Ӗ����ς��Ă��܂�.
-					// b. "a / *p;" �͉��Z�q�Ԃ̋󔒂���������Ǝ����u���b�N�R�����g�J�n�L���ɉ����Ă��܂�.
-					// c. "a & &i;" �͉��Z�q�Ԃ̋󔒂����������"&"��"&&"�ɉ����āA���̈Ӗ����ς��Ă��܂�.
-					// d. "a ? b : ::c;" �͉��Z�q�Ԃ̋󔒂����������": ::c"��":::c"�ƂȂ蕶�@�G���[�ɂȂ�.
-					// e. "vector<vector<int> >" ��">"�Ԃ̋󔒂���������ƕ��@�G���[�ɂȂ�.
-					// �����̋L���Ԃ̋󔒂͋�؂�L���Ƃ��ĈӖ�������̂ŕK�v�ł���.
-					// �u���̂��鉉�Z�q�̑g�ݍ��킹�v�������Ɍ��o����͓̂���̂�,
-					// ��肪���肻���ȃP�[�X�ɑ΂��āu�󔒂�K�v�v�Ɣ��肷�邱�Ƃɂ���.
+					// a. "i++ + j" と "i + ++j" は演算子間の空白を除去するとどちらも"i+++j"となり式の意味が変ってしまう.
+					// b. "a / *p;" は演算子間の空白を除去すると式がブロックコメント開始記号に化けてしまう.
+					// c. "a & &i;" は演算子間の空白を除去すると"&"が"&&"に化けて、式の意味が変ってしまう.
+					// d. "a ? b : ::c;" は演算子間の空白を除去すると": ::c"が":::c"となり文法エラーになる.
+					// e. "vector<vector<int> >" は">"間の空白を除去すると文法エラーになる.
+					// これらの記号間の空白は区切り記号として意味があるので必要である.
+					// 「問題のある演算子の組み合わせ」を厳密に検出するのは難しいので,
+					// 問題がありそうなケースに対して「空白を必要」と判定することにした.
 					int c0 = (uchar) d[-1];
 					if ((c0 == '/' && c == '*') || (c0 == '*' && c == '/')
 							|| c0 == c  /* "+ +", "& &", ": ::", "> >"... */) {
@@ -244,12 +244,12 @@ parse_token:
 	}//.endwhile s
 	*d = '\0';
 	if (state == CPP_COMMENT)
-		state = BLANK;	// ���S��.
+		state = BLANK;	// 安全策.
 }
 
 
 //------------------------------------------------------------------------
-/** fin����̓��͍s�ɑ΂��ăR�����g�Ɨ]���ȋ󔒂��������Afout�ɏo�͂���. */
+/** finからの入力行に対してコメントと余分な空白を除去し、foutに出力する. */
 void DecommentFile(const char* fname, FILE* fin, FILE* fout)
 {
 	char buf[LINESIZE];
@@ -277,8 +277,8 @@ void DecommentFile(const char* fname, FILE* fin, FILE* fout)
 }
 
 //------------------------------------------------------------------------
-/** ���̓t�@�C���I�[�v��.
- * �I�[�v�����s���ɂ̓��^�[�����Ȃ��ŁA�����ŏI������.
+/** 入力ファイルオープン.
+ * オープン失敗時にはリターンしないで、ここで終了する.
  */
 FILE* OpenInput(const char* fname)
 {
@@ -291,13 +291,13 @@ FILE* OpenInput(const char* fname)
 }
 
 //------------------------------------------------------------------------
-/** �o�̓t�@�C���I�[�v��.
- * �o�̓t�@�C�����́A�n���ꂽ�t�@�C�����̖����� extname ��ǉ��������̂Ƃ���.
- * �I�[�v�����s���ɂ̓��^�[�����Ȃ��ŁA�����ŏI������.
+/** 出力ファイルオープン.
+ * 出力ファイル名は、渡されたファイル名の末尾に extname を追加したものとする.
+ * オープン失敗時にはリターンしないで、ここで終了する.
  */
 FILE* OpenOutput(const char* inputfname, const char* extname)
 {
-	char fname[_MAX_PATH+100];	// �g���q�ɂ�100�������݂Ă����Ώ\��
+	char fname[_MAX_PATH+100];	// 拡張子には100文字もみておけば十分
 	if (gOutDir) {
 		char base[_MAX_PATH];
 		char ext[_MAX_PATH];
@@ -318,7 +318,7 @@ FILE* OpenOutput(const char* inputfname, const char* extname)
 }
 
 //------------------------------------------------------------------------
-/** usage�ƃG���[���b�Z�[�W��\����ɁAexit���� */
+/** usageとエラーメッセージを表示後に、exitする */
 void error_abort(const char* msg)
 {
 	fputs(gUsage, stderr);
@@ -328,14 +328,14 @@ void error_abort(const char* msg)
 }
 
 //------------------------------------------------------------------------
-/** s1��s2�͓�������? */
+/** s1とs2は等しいか? */
 inline bool strequ(const char* s1, const char* s2)
 {
 	return strcmp(s1, s2) == 0;
 }
 
 //------------------------------------------------------------------------
-/** fname��ǂݍ��݁A�R�����g�Ɨ]���ȋ󔒂��������Afname+".decomment"�ɏo�͂���. */
+/** fnameを読み込み、コメントと余分な空白を除去し、fname+".decomment"に出力する. */
 void DecommentMain(const char* fname)
 {
 	FILE* fin = OpenInput(fname);
@@ -360,15 +360,15 @@ void DecommentMain(const char* fname)
 }
 
 //------------------------------------------------------------------------
-/** ���C���h�J�[�h�W�J�ƍċA�T���t���� DecommentMain */
+/** ワイルドカード展開と再帰探索付きの DecommentMain */
 void DecommentWildMain(const char* fname)
 {
 	if (strpbrk(fname, "*?") == NULL) {
-		//----- ���C���h�J�[�h���܂܂Ȃ��p�X���̏���
+		//----- ワイルドカードを含まないパス名の処理
 		DecommentMain(fname);
 	}
 	else {
-		//----- ���C���h�J�[�h���܂ރp�X���̏���
+		//----- ワイルドカードを含むパス名の処理
 		char path[_MAX_PATH + 1000];
 		char drv[_MAX_DRIVE];
 		char dir[_MAX_PATH + 1000];
@@ -391,7 +391,7 @@ void DecommentWildMain(const char* fname)
 		if (!gIsRecursive)
 			return;
 
-		// �T�u�t�H���_���������A���ꂼ��ɑ΂��čċA����
+		// サブフォルダを検索し、それぞれに対して再帰する
 		_makepath(path, drv, dir, "*.*", NULL);
 		h = _findfirst(path, &find);
 		if (h != -1) {
@@ -405,7 +405,7 @@ void DecommentWildMain(const char* fname)
 				strcat(path, base);
 				strcat(path, ext);
 				// fprintf(stderr, "decomment recursive: %s\n", path);
-				DecommentWildMain(path); // �ċA�Ăяo��.
+				DecommentWildMain(path); // 再帰呼び出し.
 			} while (_findnext(h, &find) == 0);
 			_findclose(h);
 		}
@@ -413,10 +413,10 @@ void DecommentWildMain(const char* fname)
 }
 
 //------------------------------------------------------------------------
-/** ���C���֐� */
+/** メイン関数 */
 int main(int argc, char* argv[])
 {
-	//--- �R�}���h���C����̃I�v�V��������͂���.
+	//--- コマンドライン上のオプションを解析する.
 	while (argc > 1 && argv[1][0]=='-') {
 		char* sw = &argv[1][1];
 		if (strcmp(sw, "help") == 0)
@@ -462,7 +462,7 @@ next_arg:
 		error_abort("please specify input file.\n");
 	}
 
-	//--- �R�}���h���C����̊e���̓t�@�C������������.
+	//--- コマンドライン上の各入力ファイルを処理する.
 	for (int i = 1; i < argc; i++)
 		DecommentWildMain(argv[i]);
 
