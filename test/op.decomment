@@ -18,3 +18,14 @@ i=0xff& &v;
 i=j?i: ::func(p);
 return i;
 }
+#define A (-1)
+#define B -1
+#define C 1
+#define D "ABC"
+#define E L"ABC"
+#define F(a)-a
+#define G(a)(-(a))
+#if 0 -1
+#elif -1 -1
+#endif
+#line 1 "test.c"
