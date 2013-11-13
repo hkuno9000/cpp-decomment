@@ -108,6 +108,12 @@ inline bool IsParen(int c)
 	return (c == '[' || c == ']' || c == '{' || c == '}' || c == '(' || c == ')');
 }
 
+/** 単項演算子か判定する */
+inline bool IsUnaryOp(int c)
+{
+	return (c == '&' || c == '*' || c == '+' || c == '-' || c == '~' || c == '!');
+}
+
 //------------------------------------------------------------------------
 /** C++ソースとして"余分な空白"と"コメント"と改行を除去する. */
 void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, const char* s)
@@ -116,6 +122,7 @@ void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, con
 	char* top = d;
 	cpp_state_e lastToken = state;
 	bool needSpace = false;
+	bool isMacro = false;
 	while ((c = (uchar)*s++) != '\0') {
 
 		if (c == '\\' && *s == '\n') { // 行の併合指定.
@@ -181,6 +188,18 @@ void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, con
 		case BLANK:
 			if (c == '\n' || IsSpace(c))
 				continue;
+			if (c == '#') {
+				isMacro = true;
+			}
+			if (isMacro && lastToken == IDNAME && (c == '"' || c == '\'' || c == '(' || IsUnaryOp(c)) && d > top) {
+				// Don't remove a space after ID/if in following cases:
+				//  #define ID "abc"
+				//  #define ID 'c'
+				//  #define ID (-1)
+				//  #define ID -1
+				//  #if -1
+				needSpace = true;
+			}
 parse_token:
 			if (c == '/' && *s == '*') {
 				state = C_COMMENT; ++s;
