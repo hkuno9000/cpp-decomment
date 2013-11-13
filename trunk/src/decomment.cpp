@@ -72,16 +72,18 @@ const char* gUsage  = "usage :decomment [-h?biqnsr] [-d<DIR>] file1.cpp file2.cp
 
 /** detail help-message for options and version */
 const char* gUsage2 =
-	"  version: 1.8\n"
+	"  version: 1.9\n"
 	"  -h -?      this help\n"
 	"  -b         keep blank line\n"
 	"  -i         keep indent spaces\n"
 	"  -q         remove quoted string\n"
 	"  -n         print line number of input-file\n"
 	"  -s         output to stdout instend of files(*.decomment)\n"
-	"  -r         recursive search under the input-file's folder(wildcard needed)\n"
+	"  -r         [WIN32 only] recursive search under the input-file's folder(wildcard needed)\n"
 	"  -d<DIR>    output to DIR\n"
-	"  fileN.cpp  input-files. wildcard OK\n";
+	"  fileN.cpp  input-files. wildcard OK\n"
+	"\n  supports and source codes are: http://code.google.com/p/cpp-decomment/\n";
+	;
 
 //------------------------------------------------------------------------
 /** 英数字か判定する */

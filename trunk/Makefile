@@ -22,6 +22,7 @@ build:
 	vcbuild decomment.sln
 
 zip:
+#	svn list -R | zip -@ -D cpp-decomment-src.zip
 	zip cpp-decomment-src.zip Makefile decomment.sln decomment.vcproj src/* test/* -x *.aps
 	zip cpp-decomment-exe.zip -j Release/decomment.exe
 
