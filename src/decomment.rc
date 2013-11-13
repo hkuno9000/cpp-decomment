@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,8,0,1
- PRODUCTVERSION 1,8,0,1
+ FILEVERSION 1,9,0,1
+ PRODUCTVERSION 1,9,0,1
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -72,9 +72,9 @@ BEGIN
             VALUE "Comments", "ProjectHome: http://code.google.com/p/cpp-decomment/"
             VALUE "CompanyName", "New BSD License"
             VALUE "FileDescription", "remove C++ comments and white spaces in source files."
-            VALUE "FileVersion", "1, 8, 0, 1"
+            VALUE "FileVersion", "1, 9, 0, 1"
             VALUE "InternalName", "decomment"
-            VALUE "LegalCopyright", "Copyright (C) 2009"
+            VALUE "LegalCopyright", "Copyright (C) 2009,2013"
             VALUE "OriginalFilename", "decomment.exe"
             VALUE "ProductName", "cpp-decomment"
             VALUE "ProductVersion", "1, 8, 0, 1"
