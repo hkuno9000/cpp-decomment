@@ -1,0 +1,33 @@
+#blank lines
+#indent blank lines
+#tail blanks
+1
+2
+3
+4
+a
+b
+c
+d
+#head blanks(indent)
+1
+2
+3
+4
+a
+b
+c
+d
+#head and tail blanks
+1 2
+2 3
+3 4
+4 5
+a b
+b c
+c d
+d e
+#blank in comment
+/ * this is not comment * / /
+/ * this is not comment * / /
+#end

@@ -1,0 +1,32 @@
+# include < stdio.h >
+template < typename T > class A {
+public :
+T mVal ;
+int operator & ( ) const { return 1 ; }
+} ;
+int func ( const char * p )
+{
+if ( p == NULL ) return 1 ;
+int i , j ;
+i = j = 1 ;
+A < A < int > > v ;
+v . mVal . mVal = i ;
+i = 5 / * p ;
+i = * p + ++ i ;
+i = * p ++ + i ;
+i = 0xff & &v ;
+i = j ? i : :: func ( p ) ;
+return i ;
+}
+# define A ( -1 )
+# define A ( -1 )
+# define B -1
+# define C 1
+# define D "ABC"
+# define E L"ABC"
+# define F( a ) - a
+# define G( a ) ( - ( a ) )
+# if 0 - 1
+# elif -1 - 1
+# endif
+# line 1 "test.c"
