@@ -50,6 +50,9 @@ bool gIsKeepBlankLine = false;
 /** -i: keep indent spaces */
 bool gIsKeepIndent = false;
 
+/** -m: keep minimum space */
+bool gIsKeepMinimumSpace = false;
+
 /** -q: remove quoted string */
 bool gIsRemoveQuotedString = false;
 
@@ -68,7 +71,7 @@ const char* gOutDir = NULL;
 //........................................................................
 // messages
 /** short help-message */
-const char* gUsage  = "usage :decomment [-h?biqnsr] [-d<DIR>] file1.cpp file2.cpp ...\n";
+const char* gUsage  = "usage :decomment [-h?bimqnsr] [-d<DIR>] file1.cpp file2.cpp ...\n";
 
 /** detail help-message for options and version */
 const char* gUsage2 =
@@ -76,6 +79,7 @@ const char* gUsage2 =
 	"  -h -?      this help\n"
 	"  -b         keep blank line\n"
 	"  -i         keep indent spaces\n"
+	"  -m         keep minimum space\n"
 	"  -q         remove quoted string\n"
 	"  -n         print line number of input-file\n"
 	"  -s         output to stdout instend of files(*.decomment)\n"
@@ -114,6 +118,15 @@ inline bool IsParen(int c)
 inline bool IsUnaryOp(int c)
 {
 	return (c == '&' || c == '*' || c == '+' || c == '-' || c == '~' || c == '!');
+}
+
+/** 文字列が全て空白文字か判定する */
+bool IsAllSpaces(const char* s)
+{
+	while (*s) {
+		if (!IsSpace(*s++)) return false;
+	}
+	return true;
 }
 
 //------------------------------------------------------------------------
@@ -200,6 +213,9 @@ void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, con
 				//  #define ID (-1)
 				//  #define ID -1
 				//  #if -1
+				needSpace = true;
+			}
+			if (gIsKeepMinimumSpace && d > top) {
 				needSpace = true;
 			}
 parse_token:
@@ -292,7 +308,7 @@ void DecommentFile(const char* fname, FILE* fin, FILE* fout)
 
 		DecommentLine(fname, i+1, cppState, line, s);
 
-		if (!gIsKeepBlankLine && !line[0])
+		if (!gIsKeepBlankLine && IsAllSpaces(line))
 			continue;
 		if (gIsPrintNumber)
 			fprintf(fout, "%07d:", i+1);
@@ -469,6 +485,9 @@ show_help:			error_abort(gUsage2);
 					break;
 				case 'i':
 					gIsKeepIndent = true;
+					break;
+				case 'm':
+					gIsKeepMinimumSpace = true;
 					break;
 				case 'q':
 					gIsRemoveQuotedString = true;
