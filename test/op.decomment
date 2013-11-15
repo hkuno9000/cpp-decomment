@@ -19,6 +19,7 @@ i=j?i: ::func(p);
 return i;
 }
 #define A (-1)
+#define A (-1)
 #define B -1
 #define C 1
 #define D "ABC"
