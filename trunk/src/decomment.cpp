@@ -82,11 +82,11 @@ const char* gUsage2 =
 	"  -m         keep minimum space\n"
 	"  -q         remove quoted string\n"
 	"  -n         print line number of input-file\n"
-	"  -s         output to stdout instend of files(*.decomment)\n"
+	"  -s         output to stdout instend of output-files\n"
 	"  -r         [WIN32 only] recursive search under the input-file's folder(wildcard needed)\n"
 	"  -d<DIR>    output to DIR\n"
-	"  fileN.cpp  input-files. wildcard OK\n"
-	"\n  supports and source codes are: http://code.google.com/p/cpp-decomment/\n";
+	"  fileN.cpp  input-files. wildcard OK. The output-file is 'fileN.cpp.decomment'\n"
+	"\n  supports and source codes at: http://code.google.com/p/cpp-decomment/\n";
 	;
 
 //------------------------------------------------------------------------
