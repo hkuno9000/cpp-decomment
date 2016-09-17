@@ -86,7 +86,7 @@ const char* gUsage2 =
 	"  -r         [WIN32 only] recursive search under the input-file's folder(wildcard needed)\n"
 	"  -d<DIR>    output to DIR\n"
 	"  fileN.cpp  input-files. wildcard OK. The output-file is 'fileN.cpp.decomment'\n"
-	"\n  supports and source codes at: http://code.google.com/p/cpp-decomment/\n";
+	"\n  supports and source codes at: https://github.com/hkuno9000/cpp-decomment/\n";
 	;
 
 //------------------------------------------------------------------------

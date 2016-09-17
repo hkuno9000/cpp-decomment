@@ -1,7 +1,7 @@
 # Makefile - for decomment
 #
-# Project Home: http://code.google.com/p/cpp-decomment/
-# Code license: New BSD License
+# Project Home: https://github.com/hkuno9000/cpp-decomment
+# Code license: MIT License
 #-------------------------------------------------------------------------
 # MAIN TARGET
 all:	build
