@@ -27,6 +27,14 @@ decomment [-h?bimqnsr] [-d<DIR>] file1.cpp file2.cpp ...
   -d<DIR>    output to DIR
   fileN.cpp  input-files. wildcard OK. The output-file is 'fileN.cpp.decomment'
 ```
+## install
+```
+git clone http https://github.com/hkuno9000/cpp-decomment.git
+cd cpp-decomment
+make
+sudo make install
+```
+
 ## History
 * Automatically exported from code.google.com/p/cpp-decomment.
   * see https://code.google.com/archive/p/cpp-decomment/

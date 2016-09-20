@@ -23,10 +23,11 @@ rebuild:
 build:
 	vcbuild decomment.sln
 
+install:
+	@echo *** HOWTO INSTALL: copy $(TARGET) YOUR-TOOLS-FOLDER
+
 zip:
-#	svn list -R | zip -@ -D cpp-decomment-src.zip
-	zip cpp-decomment-src.zip Makefile decomment.sln decomment.vcproj src/* test/* -x *.aps
-	zip cpp-decomment-exe.zip -j Release/decomment.exe
+	git archive --format zip master -o decomment-master.zip
 
 #.........................................................................
 # TEST
