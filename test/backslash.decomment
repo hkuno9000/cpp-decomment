@@ -1,0 +1,12 @@
+#backslash line merge in token
+#define MAX(a,b)\
+((a)>(b)?a:b)
+#define MIN(a,b)\#not at EOF,do not merge
+((a)<(b)?a:b)
+#backslash line merge in quoted string
+char*p="abc\
+efg\
+hij";
+#normal block comment
+#backslash line merge in block comment
+#backslash line merge in single line comment

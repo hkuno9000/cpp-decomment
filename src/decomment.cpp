@@ -56,6 +56,9 @@ bool gIsKeepMinimumSpace = false;
 /** -q: remove quoted string */
 bool gIsRemoveQuotedString = false;
 
+/** -g: ignore backslash at end of single line comment */
+bool gIsIgnoreBackslashEndOfCppComment = false;
+
 /** -n: print line number */
 bool gIsPrintNumber = false;
 
@@ -71,16 +74,17 @@ const char* gOutDir = NULL;
 //........................................................................
 // messages
 /** short help-message */
-const char* gUsage  = "usage :decomment [-h?bimqnsr] [-d<DIR>] file1.cpp file2.cpp ...\n";
+const char* gUsage  = "usage :decomment [-h?bimqgnsr] [-d<DIR>] file1.cpp file2.cpp ...\n";
 
 /** detail help-message for options and version */
 const char* gUsage2 =
-	"  version: 1.9\n"
+	"  version: 2.0\n"
 	"  -h -?      this help\n"
 	"  -b         keep blank line\n"
 	"  -i         keep indent spaces\n"
 	"  -m         keep minimum space\n"
 	"  -q         remove quoted string\n"
+	"  -g         ignore backslash at end of single line comment\n"
 	"  -n         print line number of input-file\n"
 	"  -s         output to stdout instend of output-files\n"
 	"  -r         [WIN32 only] recursive search under the input-file's folder(wildcard needed)\n"
@@ -130,7 +134,13 @@ bool IsAllSpaces(const char* s)
 }
 
 //------------------------------------------------------------------------
-/** C++ソースとして"余分な空白"と"コメント"と改行を除去する. */
+/** remove C/C++ comment and white spaces.
+ * @param fname  input file name
+ * @param line   line number of input file
+ * @param state  curent syntax state
+ * @param d      output source line
+ * @param s      input C/CPP source line
+ */
 void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, const char* s)
 {
 	int c;
@@ -140,23 +150,30 @@ void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, con
 	bool isMacro = false;
 	while ((c = (uchar)*s++) != '\0') {
 
-		if (c == '\\' && *s == '\n') { // 行の併合指定.
+		if (c == '\\' && *s == '\n') { // backslash at end of line.
 			if (state == CPP_COMMENT) {
-				// 単行コメントから次行への行併合指定は何かの誤りなので警告を出して無視する。
-				// 漢字第二バイトの文字コードが 0x5c の場合も拾ってしまうが、
-				// 英語環境でコンパイルすると併合指定扱いになる怪しいケースなので、警告を出しておく。
-				fprintf(stderr, "%s(%d) !!!warning: line-marge-mark '\\' at end of single comment. ignore it.\n",
-					fname, line);
-				state = BLANK;
+				// At single line comment.
+				// That may be a mistake or 2nd byte code of multi-byte-encoding.
+				// So, print warning message.
+				if (gIsIgnoreBackslashEndOfCppComment) {
+					state = BLANK; // ignore it.
+				}
+				fprintf(stderr, "%s(%d) !!!warning: line-merge-mark '\\' at end of single line comment. %s\n",
+					fname, line,
+					state == BLANK
+						? "ignore it by -g option on, next line is not a comment."
+						: "accept it by -g opiton off, next line is a comment."
+					);
 			}
 			else if (state == C_COMMENT) {
-				// ブロックコメント内にて、次行への行併合指定はやはり誤りと思われるが、
-				// 次行も同じコメント内なので、併合したところで問題はない。よって無視する。
+				// In block comment.
+				// That may be a mistake or 2nd byte code of multi-byte-encoding.
+				// But, next line is a comment for any case. So, do not care.
 			}
 			else {
 				*d++ = c;	// c='\\'
 			}
-			++s; continue; // 行末記号'\n'の次へ進む(おそらく文字列末)
+			++s; continue; // fetch '\n'. next char may be '\0'
 		}
 
 		switch (state) {
@@ -286,8 +303,6 @@ parse_token:
 		*d++ = c;
 	}//.endwhile s
 	*d = '\0';
-	if (state == CPP_COMMENT)
-		state = BLANK;	// 安全策.
 }
 
 
@@ -491,6 +506,9 @@ show_help:			error_abort(gUsage2);
 					break;
 				case 'q':
 					gIsRemoveQuotedString = true;
+					break;
+				case 'g':
+					gIsIgnoreBackslashEndOfCppComment = true;
 					break;
 				case 'n':
 					gIsPrintNumber = true;

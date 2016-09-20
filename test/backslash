@@ -1,0 +1,28 @@
+#backslash line merge in token
+#define MAX(a,b) \
+	((a) > (b) ? a : b)
+#define MIN(a,b) \ # not at EOF, do not merge
+	((a) < (b) ? a : b)
+
+#backslash line merge in quoted string
+char* p = "abc\
+efg\
+hij";
+
+#normal block comment
+/* block comment
+ 2nd comment
+ 3rd comment
+ */
+#backslash line merge in block comment
+/* block comment \
+ 2nd comment \
+ 3rd comment
+ */
+
+#backslash line merge in single line comment
+// single line comment \
+ 2nd comment \
+ 3rd comment
+// single line with multi-byte-encode(CP932) text 0x955C: •\
+ this is not comment
