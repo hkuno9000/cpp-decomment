@@ -520,7 +520,8 @@ show_help:			error_abort(gUsage2);
 					gIsRecursive = true;
 					break;
 				case 'd':
-					gOutDir = sw+1;
+					gOutDir = sw+1; // "-d<DIR>"
+					if (*gOutDir == '\0') gOutDir = *argv++; // "-d <DIR>"
 					goto next_arg;
 				default:
 					error_abort("unknown option.\n");
