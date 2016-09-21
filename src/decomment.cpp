@@ -307,7 +307,7 @@ parse_token:
 
 
 //------------------------------------------------------------------------
-/** finからの入力行に対してコメントと余分な空白を除去し、foutに出力する. */
+/** input from fin, remove comment and white spaces, and output to fout. */
 void DecommentFile(const char* fname, FILE* fin, FILE* fout)
 {
 	char buf[LINESIZE];
@@ -316,7 +316,7 @@ void DecommentFile(const char* fname, FILE* fin, FILE* fout)
 
 	for (int i = 0; fgets(buf, sizeof(buf), fin) != NULL; ++i) {
 		char* s = buf;
-		if (gIsKeepIndent) {
+		if (gIsKeepIndent && cppState == BLANK) {
 			while (*s == ' ' || *s == '\t')
 				++s;
 		}
