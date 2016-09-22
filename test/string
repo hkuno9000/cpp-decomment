@@ -1,0 +1,43 @@
+#char literals
+char	 		'x'
+char16_t		u'x'
+char32_t		U'x'
+wchar_t			L'x'
+escape-lf		'\n'
+escape-tab		'\t'
+escape-vt		'\v'
+escape-bs		'\b'
+escape-cr		'\r'
+escape-ff		'\f'
+escape-bel		'\a'
+escape-backslash	'\\'
+escape-s-quote		'\''
+escape-d-quote		'\"'
+escape-question		'\?'
+escape-code		'\x01'
+UCN			'\u3000'
+
+#string literals
+char[]			"a"
+char[]			u8"utf8"
+char16_t[]		u"utf16"
+char32_t[]		U"utf32"
+wchar_t[]		L"wide"
+escape-string		"\n\t\v\b\r\f\a\\\'\"\?\x01\u3000"
+
+#raw string
+raw-string-newline	R"(aaa
+bbb
+ccc
+\\\
+""")"
+raw-string-opt		R"///(raw( \ " / )raw)///"
+
+#string literals in macro
+  #define ID	L"wide\
+string\
+literals"
+  #define ID	R"(raw
+string
+literals)"
+

@@ -1,0 +1,39 @@
+#char literals
+char 'x'
+char16_t u'x'
+char32_t U'x'
+wchar_t L'x'
+escape-lf '\n'
+escape-tab '\t'
+escape-vt '\v'
+escape-bs '\b'
+escape-cr '\r'
+escape-ff '\f'
+escape-bel '\a'
+escape-backslash '\\'
+escape-s-quote '\''
+escape-d-quote '\"'
+escape-question '\?'
+escape-code '\x01'
+UCN '\u3000'
+#string literals
+char[] ""
+char[] u8""
+char16_t[] u""
+char32_t[] U""
+wchar_t[] L""
+escape-string ""
+#raw string
+raw-string-newline R"(
+
+
+
+)"
+raw-string-opt R"///()///"
+#string literals in macro
+#define ID L"\
+\
+"
+#define ID R"(
+
+)"

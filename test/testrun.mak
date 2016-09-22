@@ -4,7 +4,7 @@
 # UNIX:  TARGET=Release\decomment
 .SUFFIXES: .test  # activate $* for .test
 
-testrun: blank.test nest.test op.test backslash.test
+testrun: blank.test nest.test op.test backslash.test string.test
 	@echo pass all tests.
 
 blank.test: $(TARGET)
@@ -39,4 +39,13 @@ backslash.test: $(TARGET)
 	diff $*.decomment test/$*.decomment-g
 	@echo pass [$*]
 
+string.test: $(TARGET)
+	@echo test [$*]
+	$(TARGET) -d.     test/$*
+	diff $*.decomment test/$*.decomment
+	$(TARGET) -d. -m  test/$*
+	diff $*.decomment test/$*.decomment-m
+	$(TARGET) -d. -mq test/$*
+	diff $*.decomment test/$*.decomment-mq
+	@echo pass [$*]
 # testrun.mak - end

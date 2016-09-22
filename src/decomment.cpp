@@ -35,6 +35,7 @@ enum cpp_state_e {
 	OPERATOR,			// operator or others. "=", "==", "+", "+=", "++", ...
 	CPP_COMMENT,		// C++ single comment. "//..."
 	C_COMMENT,			// C comment block.    "/* ... */"
+	RAWSTRING_CONSTANT,	// raw string constant head. "R"opt(...)opt""
 	STRING_CONSTANT,	// string constant. ""...""
 	CHAR_CONSTANT,		// char constant.   "'...'"
 	STRING_ESCAPE,		// after "\" in string constant.
@@ -146,11 +147,13 @@ void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, con
 	int c;
 	char* top = d;
 	cpp_state_e lastToken = state;
+	static char   rawStringDelimiterStr[16+1+1];	///@todo should be member of cpp_state
+	static size_t rawStringDelimiterLen = 0;		///@todo shuold be member of cpp_state
 	bool needSpace = false;
 	bool isMacro = false;
 	while ((c = (uchar)*s++) != '\0') {
 
-		if (c == '\\' && *s == '\n') { // backslash at end of line.
+		if (c == '\\' && *s == '\n' && state != RAWSTRING_CONSTANT) { // backslash at end of line.
 			if (state == CPP_COMMENT) {
 				// At single line comment.
 				// That may be a mistake or 2nd byte code of multi-byte-encoding.
@@ -189,6 +192,18 @@ void DecommentLine(const char* fname, int line, cpp_state_e& state, char* d, con
 			}
 			continue;
 
+		case RAWSTRING_CONSTANT:
+			if (c == ')' && strncmp(s, rawStringDelimiterStr, rawStringDelimiterLen) == 0) {
+				*d++ = c;
+				strncpy(d, s, rawStringDelimiterLen);
+				s += rawStringDelimiterLen;
+				d += rawStringDelimiterLen;
+				state = SEPARATOR;
+				continue;
+			}
+			else if (gIsRemoveQuotedString && c != '\n')
+				continue; // skip output
+			break;
 		case STRING_CONSTANT:
 			if (c == '"')
 				state = SEPARATOR;
@@ -245,7 +260,24 @@ parse_token:
 				continue;
 			}
 			else if (c == '"') {
-				lastToken = state = STRING_CONSTANT;
+				if (lastToken == IDNAME && d > top && d[-1] == 'R') { // "R" is parsed as IDNAME.
+					size_t n = strcspn(s, "(");
+					if (s[n] == '(' && n <= 16)
+						strncpy(rawStringDelimiterStr, s, n);	// copy opt in 'R"opt(...'
+					else
+						n = 0;
+					strcpy(rawStringDelimiterStr + n, "\"");
+					rawStringDelimiterLen = n + 1;
+					*d++ = c;
+					strncpy(d, s, n + 1);
+					s += n + 1;
+					d += n + 1;
+					lastToken = state = RAWSTRING_CONSTANT;
+					continue;
+				}
+				else {
+					lastToken = state = STRING_CONSTANT;
+				}
 				break;
 			}
 			else if (c == '\'') {
@@ -323,14 +355,15 @@ void DecommentFile(const char* fname, FILE* fin, FILE* fout)
 
 		DecommentLine(fname, i+1, cppState, line, s);
 
-		if (!gIsKeepBlankLine && IsAllSpaces(line))
+		if (!gIsKeepBlankLine && IsAllSpaces(line) && cppState != RAWSTRING_CONSTANT)
 			continue;
 		if (gIsPrintNumber)
 			fprintf(fout, "%07d:", i+1);
 		if (buf < s)
 			fwrite(buf, 1, s - buf, fout); // indent
 		fputs(line, fout); // decommented line
-		putc('\n', fout);
+		if (cppState != RAWSTRING_CONSTANT)
+			putc('\n', fout);
 	}
 }
 
