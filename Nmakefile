@@ -6,6 +6,12 @@
 # MAIN TARGET
 TARGET=Release\decomment.exe
 
+!IFDEF VISUALSTUDIOVERSION
+SLN=decomment2015.sln
+!ELSE
+SLN=decomment2008.sln
+!ENDIF
+
 all:	build
 
 #-------------------------------------------------------------------------
@@ -15,13 +21,13 @@ cleanall: clean
 	del *.zip *.ncb *.user *.dat *.cache *.bak *.decomment $$* src\*.aps src\*.bak
 
 clean:
-	vcbuild /clean   decomment.sln
+	msbuild /t:$@ /p:Configuration=Release $(SLN)
 
 rebuild:
-	vcbuild /rebuild decomment.sln
+	msbuild /t:$@ /p:Configuration=Release $(SLN)
 
 build:
-	vcbuild decomment.sln
+	msbuild /t:$@ /p:Configuration=Release $(SLN)
 
 install:
 	@echo *** HOWTO INSTALL: copy $(TARGET) YOUR-TOOLS-FOLDER

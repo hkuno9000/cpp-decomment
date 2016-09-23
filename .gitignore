@@ -2,3 +2,8 @@ Debug/
 Release/
 *.decomment
 *.zip
+*.sdf
+*.aps
+*.ncb
+*.user
+*.cache
