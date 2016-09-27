@@ -5,17 +5,21 @@
 #-------------------------------------------------------------------------
 # MAIN TARGET
 TARGET=Release/decomment
+ifndef PREFIX
+PREFIX=/usr/local
+endif
 
 all:	build
 
 #-------------------------------------------------------------------------
 # COMMANDS
 #
-cleanall: clean
-	-rm -f *.zip *.o *.bak *.decomment
-
 clean:
-	-rm -f $(TARGET)
+	$(RM) *.o *~ *.bak *.tmp
+	$(RM) *.decomment $(TARGET)
+
+cleanall: clean
+	$(RM) *.zip
 
 rebuild: clean build
 
@@ -26,7 +30,7 @@ $(TARGET): src/decomment.cpp
 	$(CXX) $(CXXFLAGS) -Wall $^ -o $@
 
 install:
-	install $(TARGET) /usr/local/bin
+	install $(TARGET) $(PREFIX)/bin/decomment
 
 zip:
 	git archive --format zip master -o decomment-master.zip
