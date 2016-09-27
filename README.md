@@ -32,7 +32,7 @@ decomment [-h?bimqgnsr] [-d<DIR>] file1.cpp file2.cpp ...
 ```
 ## Install
 ```
-git clone http https://github.com/hkuno9000/cpp-decomment.git
+git clone https://github.com/hkuno9000/cpp-decomment.git
 cd cpp-decomment
 make
 sudo make install
